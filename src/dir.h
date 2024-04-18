@@ -1,8 +1,6 @@
 #ifndef DIR_H
 #define DIR_H
 
-#include <dirent.h>
-#include <stdio.h>
 #include "list.h"
 
 typedef struct {
@@ -10,8 +8,8 @@ typedef struct {
 	const char *path;
 	item_list files;
 
-} directory;
+} fdir;
 
-directory dir_new(const char *path);
+fdir dir_new(const char *path);
 
 #endif // !DIR_H

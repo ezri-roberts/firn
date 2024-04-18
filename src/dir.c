@@ -1,9 +1,8 @@
 #include "dir.h"
-#include "list.h"
 
-directory dir_new(const char *path) {
+fdir dir_new(const char *path) {
 
-	directory dir;
+	fdir dir;
 
 	dir.path = path;
 	dir.files = item_list_new();
