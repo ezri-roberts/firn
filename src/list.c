@@ -23,14 +23,6 @@ void item_list_insert(item_list *list, struct dirent *item) {
 
 void item_list_destroy(item_list *list) {
 
-	for (size_t i = 0; i < list->used; i++) {
-
-		struct dirent *item = list->items[i];
-
-		free(item);
-		item = NULL;
-	}
-
 	free(list->items);
 	list->items = NULL;
 	list->used = 0;

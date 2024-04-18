@@ -1,15 +1,13 @@
-#include "dir.h"
-#include "../lib/termbox2/termbox2.h"
+#include "menu.h"
 
 int main(int argc, char *argv[]) {
 
 	(void)argc; (void)argv;
 
-	fdir dir = dir_new(".");
+	fmenu menu = fmenu_new();
 
-	tb_init();
-
-	tb_shutdown();
+	fmenu_update(&menu);
+	fmenu_destroy(&menu);
 
 	return 0;
 }

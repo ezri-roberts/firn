@@ -1,6 +1,6 @@
 #include "dir.h"
 
-fdir dir_new(const char *path) {
+fdir fdir_new(const char *path) {
 
 	fdir dir;
 
@@ -17,7 +17,6 @@ fdir dir_new(const char *path) {
 
 			if (item->d_name[0] == '.') continue;
 
-      printf("%s\n", item->d_name);
 			item_list_insert(&dir.files, item);
     }
 
@@ -25,4 +24,9 @@ fdir dir_new(const char *path) {
   }
 
 	return dir;
+}
+
+void fdir_destroy(fdir *dir) {
+
+	item_list_destroy(&dir->files);
 }

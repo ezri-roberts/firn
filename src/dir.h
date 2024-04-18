@@ -10,6 +10,7 @@ typedef struct {
 
 } fdir;
 
-fdir dir_new(const char *path);
+fdir fdir_new(const char *path);
+void fdir_destroy(fdir *dir);
 
 #endif // !DIR_H
