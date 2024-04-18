@@ -47,6 +47,7 @@ void fmenu_update(fmenu *menu);
 void fmenu_destroy(fmenu *menu);
 // Print out colored text.
 void _print(const char *bk, const char *fg, const char *format, ...);
+void _cursor_enable(bool enable);
 void _clear();
 
 #endif // !MENU_H

@@ -13,6 +13,7 @@ fmenu fmenu_new() {
 	menu.newt = menu.oldt; // copy the old settings
 	menu.newt.c_lflag &= ~(ICANON | ECHO); // disable canonical mode and echoing
 	tcsetattr(STDIN_FILENO, TCSANOW, &menu.newt); // apply new settings
+	_cursor_enable(false);
 
 	return menu;
 }
@@ -77,6 +78,14 @@ void _print(const char *bk, const char *fg, const char *format, ...) {
 	va_end(argptr);
 }
 
+void _cursor_enable(bool enable) {
+	if (enable) { 				// Show the cursor.
+		printf("\e[?25h");
+	} else {							// Hide the cursor.
+		printf("\e[?25l");
+	}
+}
+
 void _clear() {
 	printf("\e[1;1H\e[2J");
 }
@@ -84,6 +93,7 @@ void _clear() {
 void fmenu_destroy(fmenu *menu) {
 
 	_clear();
+	_cursor_enable(true);
 	fdir_destroy(&menu->working);
 	tcsetattr(STDIN_FILENO, TCSANOW, &menu->oldt); // restore the original terminal attributes.
 	printf("Closing.\n");
