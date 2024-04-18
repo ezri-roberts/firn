@@ -1,4 +1,5 @@
 #include "menu.h"
+#include <stdio.h>
 
 fmenu fmenu_new() {
 
@@ -48,12 +49,27 @@ void fmenu_update(fmenu *menu) {
 
 		struct dirent *item = menu->working.files.items[i];
 
-		if (i == menu->selected) printf("> ");
-		printf("%s\n", item->d_name);
+		const char *color = COLOR_RESET;
+		if (i == menu->selected) {
+			printf("> ");
+			color = COLOR_BLUE;
+		}
+		_print(color, "%s\n", item->d_name);
 	}
 
 	fmenu_input(menu);
 	fmenu_update(menu);
+}
+
+void _print(const char *color, const char *format, ...) {
+
+	char str[256];
+	sprintf(str, "%s%s%s", color, format, COLOR_RESET);
+
+	va_list argptr;
+	va_start(argptr, format);
+	vprintf(str, argptr);
+	va_end(argptr);
 }
 
 void _clear() {
