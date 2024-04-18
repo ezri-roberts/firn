@@ -1,5 +1,5 @@
-#ifndef MENU_H
-#define MENU_H
+#ifndef FIRN_H
+#define FIRN_H
 
 #include <stdbool.h>
 #include <stdio.h>
@@ -40,15 +40,15 @@ typedef struct {
 	struct termios oldt; // Original terminal attributes.
 	struct termios newt; // Our modified attributes.
 
-} fmenu;
+} firn;
 
-fmenu fmenu_new();
-void fmenu_input(fmenu *menu);
-void fmenu_update(fmenu *menu);
-void fmenu_destroy(fmenu *menu);
+firn firn_new();
+void firn_input(firn *inst);
+void firn_update(firn *inst);
+void firn_destroy(firn *inst);
 // Print out colored text.
 void _print(const char *bk, const char *fg, const char *format, ...);
 void _cursor_enable(bool enable);
 void _clear();
 
-#endif // !MENU_H
+#endif // !FIRN_H

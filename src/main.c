@@ -1,13 +1,13 @@
-#include "menu.h"
+#include "firn.h"
 
 int main(int argc, char *argv[]) {
 
 	(void)argc; (void)argv;
 
-	fmenu menu = fmenu_new();
+	firn inst = firn_new();
 
-	fmenu_update(&menu);
-	fmenu_destroy(&menu);
+	firn_update(&inst);
+	firn_destroy(&inst);
 
 	return 0;
 }

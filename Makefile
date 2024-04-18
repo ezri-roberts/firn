@@ -5,7 +5,7 @@ BIN_DIR = bin
 OBJ_DIR = obj
 BIN = out
 
-OBJS = main.o dir.o list.o menu.o
+OBJS = main.o dir.o list.o firn.o
 
 all: create_dir $(BIN_DIR)/$(BIN)
 
