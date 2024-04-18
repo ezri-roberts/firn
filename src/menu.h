@@ -30,12 +30,13 @@
 typedef struct {
 
 	fdir working;
-	fdir up;
 	fdir down;
 
 	int selected;
 	bool running;
 
+	// user + hostname
+	char user[512];		 // Linux supports user and hostnames of up to 255 bytes.
 	struct termios oldt; // Original terminal attributes.
 	struct termios newt; // Our modified attributes.
 

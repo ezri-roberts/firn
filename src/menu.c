@@ -15,6 +15,8 @@ fmenu fmenu_new() {
 	tcsetattr(STDIN_FILENO, TCSANOW, &menu.newt); // apply new settings
 	_cursor_enable(false);
 
+	sprintf(menu.user, "%s@%s", getenv("USER"), getenv("HOSTNAME"));
+
 	return menu;
 }
 
@@ -46,17 +48,27 @@ void fmenu_update(fmenu *menu) {
 
 	_clear();
 
+	_print(BK_BLACK, FG_GREEN, "%s\n", menu->user);
+
 	for (size_t i = 0; i < menu->working.files.used; i++) {
 
 		struct dirent *item = menu->working.files.items[i];
 
-		// const char *color = COLOR_RESET;
-		const char *bk = BK_BLACK;
-		const char *fg = FG_BLUE;
-		if (i == menu->selected) {
-			bk = BK_BLUE;
-			fg = FG_BLACK;
+		bool selected = (menu->selected == i);
+		const char *bk;
+		const char *fg;
+
+		if (item->d_type == 4) {
+
+			bk = selected ? BK_BLUE : BK_BLACK;
+			fg = selected ? FG_BLACK : FG_BLUE;
+		} else {
+
+			bk = selected ? BK_WHITE : BK_BLACK;
+			fg = selected ? FG_BLACK : FG_WHITE;
 		}
+
+
 		_print(bk, fg, "%s\n", item->d_name);
 	}
 
@@ -79,11 +91,7 @@ void _print(const char *bk, const char *fg, const char *format, ...) {
 }
 
 void _cursor_enable(bool enable) {
-	if (enable) { 				// Show the cursor.
-		printf("\e[?25h");
-	} else {							// Hide the cursor.
-		printf("\e[?25l");
-	}
+	enable ? printf("\e[?25h") : printf("\e[?25l");
 }
 
 void _clear() {
