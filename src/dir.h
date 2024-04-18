@@ -2,10 +2,13 @@
 #define DIR_H
 
 #include "list.h"
+#include <unistd.h>
+#include <string.h>
+#include <linux/limits.h>
 
 typedef struct {
 
-	const char *path;
+	char *path;
 	item_list files;
 
 } fdir;

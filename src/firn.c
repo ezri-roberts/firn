@@ -48,7 +48,8 @@ void firn_update(firn *inst) {
 
 	_clear();
 
-	_print(BK_BLACK, FG_GREEN, "%s\n", inst->user);
+	_print(BK_BLACK, FG_GREEN, "%s ", inst->user);
+	_print(BK_BLACK, FG_WHITE, "%s\n", inst->working.path);
 
 	for (size_t i = 0; i < inst->working.files.used; i++) {
 

@@ -4,12 +4,14 @@ fdir fdir_new(const char *path) {
 
 	fdir dir;
 
-	dir.path = path;
+	dir.path = malloc(PATH_MAX * sizeof(char));
+	realpath(path, dir.path);
+
 	dir.files = item_list_new();
 
 	DIR *d;
   struct dirent *item;
-  d = opendir(".");
+  d = opendir(path);
 
   if (d) {
 
@@ -28,5 +30,6 @@ fdir fdir_new(const char *path) {
 
 void fdir_destroy(fdir *dir) {
 
+	free(dir->path);
 	item_list_destroy(&dir->files);
 }

@@ -32,11 +32,11 @@ typedef struct {
 	fdir working;
 	fdir down;
 
+	// user + hostname
+	char user[512];		 // Linux supports user and hostnames of up to 255 bytes.
 	int selected;
 	bool running;
 
-	// user + hostname
-	char user[512];		 // Linux supports user and hostnames of up to 255 bytes.
 	struct termios oldt; // Original terminal attributes.
 	struct termios newt; // Our modified attributes.
 
@@ -48,6 +48,7 @@ void firn_update(firn *inst);
 void firn_destroy(firn *inst);
 // Print out colored text.
 void _print(const char *bk, const char *fg, const char *format, ...);
+// Show or hide the cursor.
 void _cursor_enable(bool enable);
 void _clear();
 
