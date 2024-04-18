@@ -49,19 +49,24 @@ void fmenu_update(fmenu *menu) {
 
 		struct dirent *item = menu->working.files.items[i];
 
-		const char *color = COLOR_RESET;
+		// const char *color = COLOR_RESET;
+		const char *bk = BK_BLACK;
+		const char *fg = FG_BLUE;
 		if (i == menu->selected) {
-			printf("> ");
-			color = COLOR_BLUE;
+			bk = BK_BLUE;
+			fg = FG_BLACK;
 		}
-		_print(color, "%s\n", item->d_name);
+		_print(bk, fg, "%s\n", item->d_name);
 	}
 
 	fmenu_input(menu);
 	fmenu_update(menu);
 }
 
-void _print(const char *color, const char *format, ...) {
+void _print(const char *bk, const char *fg, const char *format, ...) {
+
+	char color[128];
+	sprintf(color, "\x1b[%s;%sm", bk, fg);
 
 	char str[256];
 	sprintf(str, "%s%s%s", color, format, COLOR_RESET);
