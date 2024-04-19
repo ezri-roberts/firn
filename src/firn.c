@@ -69,16 +69,18 @@ void firn_update(firn *inst) {
 	_clear();
 
 	_print(BK_BLACK, FG_GREEN, false, "%s ", inst->user);
-	_print(BK_BLACK, FG_WHITE, false, "%s\n", inst->working.path);
+	_print(BK_BLACK, FG_WHITE, false, "%s", inst->working.path);
 
 	firn_display_list(inst, &inst->working.dirs, true, 0);
 	firn_display_list(inst, &inst->working.files, true, inst->working.dirs.used);
 
 	if (inst->current->type == 4) {
 
-		for(int i = 0; i < 62; i++) putchar('-');
-		printf("\n");
-		_print(BK_BLACK, FG_WHITE, false, "%s\n", inst->down.path);
+		// printf("\033[1;8H");
+
+		// printf("\n");
+		// for(int i = 0; i < 62; i++) putchar('-');
+		// _print_off(0, 65, BK_BLACK, FG_WHITE, false, "%s", inst->down.path);
 
 		firn_display_list(inst, &inst->down.dirs, false, 0);
 		firn_display_list(inst, &inst->down.files, false, inst->down.dirs.used);
@@ -119,11 +121,21 @@ void firn_display_list(firn *inst, fitem_list *list, bool active, int offset) {
 			name_sub[54] = '\0';
 
 			unsigned long spacing = 60 - (strlen(name_sub) + 3);
-			_print(bk, fg, over, "%c%s...%*luB\n", prefix, name_sub, spacing, item->size);
+			if (active) {
+				_print(bk, fg, over, "\n%c%s...%*luB", prefix, name_sub, spacing, item->size);
+			} else {
+				_print_off((int)(i + 2 + offset), 65, bk, fg, over, "%c%s...%*luB", prefix, name_sub, spacing, item->size);
+			}
 		} else {
 
 			unsigned long spacing = 60 - strlen(item->name);
-			_print(bk, fg, over, "%c%s%*luB\n", prefix, item->name, spacing, item->size);
+			if (active) {
+
+				_print(bk, fg, over, "\n%c%s%*luB", prefix, item->name, spacing, item->size);
+			} else {
+
+				_print_off((int)(i + 2 + offset), 65, bk, fg, over, "%c%s%*luB", prefix, item->name, spacing, item->size);
+			}
 		}
 
 	}
@@ -136,8 +148,26 @@ void _print(const char *bk, const char *fg, bool reversed, const char *format, .
 	char color[128];
 	sprintf(color, "\x1b[%d;%s;%sm", rev, bk, fg);
 
-	char str[256];
+	char str[1024];
 	sprintf(str, "%s%s%s", color, format, COLOR_RESET);
+
+	va_list argptr;
+	va_start(argptr, format);
+	vprintf(str, argptr);
+	va_end(argptr);
+}
+
+void _print_off(int yoff, int xoff, const char *bk, const char *fg, bool reversed, const char *format, ...) {
+
+	int rev = reversed ? 7 : 0;
+
+	char offset[128];
+	sprintf(offset, "\033[%d;%dH", yoff, xoff);
+	char color[128];
+	sprintf(color, "\x1b[%d;%s;%sm", rev, bk, fg);
+
+	char str[1024];
+	sprintf(str, "%s%s%s%s", offset, color, format, COLOR_RESET);
 
 	va_list argptr;
 	va_start(argptr, format);
@@ -158,6 +188,7 @@ void firn_destroy(firn *inst) {
 	_clear();
 	_cursor_enable(true);
 	fdir_destroy(&inst->working);
+	fdir_destroy(&inst->down);
 	tcsetattr(STDIN_FILENO, TCSANOW, &inst->oldt); // restore the original terminal attributes.
 	printf("Closing.\n");
 }
