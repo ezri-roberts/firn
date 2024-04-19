@@ -1,4 +1,5 @@
 #include "firn.h"
+#include "dir.h"
 
 firn firn_new(const char *path) {
 
@@ -7,6 +8,7 @@ firn firn_new(const char *path) {
 	inst.running = true;
 	inst.selected = 0;
 	inst.working = fdir_new(path);
+	inst.down = NULL;
 
 	tcgetattr(STDIN_FILENO, &inst.oldt); // save the terminal attributes
 	inst.newt = inst.oldt; // copy the old settings
@@ -25,7 +27,7 @@ void firn_input(firn *inst) {
 	ch = getchar();
 
 
-	int limit = inst->working.dirs.used + inst->working.files.used;
+	int limit = inst->working->dirs.used + inst->working->files.used;
 
 	switch (ch) {
 
@@ -38,6 +40,13 @@ void firn_input(firn *inst) {
 		case 'k':
 			if (inst->selected > 0) {
 				inst->selected--;
+			}
+			break;
+
+		case 'l':
+			if (inst->current->type == 4) {
+				inst->working = fdir_new(inst->down->path);
+				inst->selected = 0;
 			}
 			break;
 
@@ -58,32 +67,26 @@ void firn_update(firn *inst) {
 
 	if (!inst->running) return;
 
-	if (inst->selected >= inst->working.dirs.used) {
-		inst->current = inst->working.files.items[
-			inst->selected - inst->working.dirs.used
+	if (inst->selected >= inst->working->dirs.used) {
+		inst->current = inst->working->files.items[
+			inst->selected - inst->working->dirs.used
 		];
 	} else {
-		inst->current = inst->working.dirs.items[inst->selected];
+		inst->current = inst->working->dirs.items[inst->selected];
 	}
 
 	_clear();
 
 	_print(BK_BLACK, FG_GREEN, false, "%s ", inst->user);
-	_print(BK_BLACK, FG_WHITE, false, "%s", inst->working.path);
+	_print(BK_BLACK, FG_WHITE, false, "%s", inst->working->path);
 
-	firn_display_list(inst, &inst->working.dirs, true, 0);
-	firn_display_list(inst, &inst->working.files, true, inst->working.dirs.used);
+	firn_display_list(inst, &inst->working->dirs, true, 0);
+	firn_display_list(inst, &inst->working->files, true, inst->working->dirs.used);
 
 	if (inst->current->type == 4) {
 
-		// printf("\033[1;8H");
-
-		// printf("\n");
-		// for(int i = 0; i < 62; i++) putchar('-');
-		// _print_off(0, 65, BK_BLACK, FG_WHITE, false, "%s", inst->down.path);
-
-		firn_display_list(inst, &inst->down.dirs, false, 0);
-		firn_display_list(inst, &inst->down.files, false, inst->down.dirs.used);
+		firn_display_list(inst, &inst->down->dirs, false, 0);
+		firn_display_list(inst, &inst->down->files, false, inst->down->dirs.used);
 	}
 
 	firn_input(inst);
@@ -187,8 +190,8 @@ void firn_destroy(firn *inst) {
 
 	_clear();
 	_cursor_enable(true);
-	fdir_destroy(&inst->working);
-	fdir_destroy(&inst->down);
+	fdir_destroy(inst->working);
+	fdir_destroy(inst->down);
 	tcsetattr(STDIN_FILENO, TCSANOW, &inst->oldt); // restore the original terminal attributes.
 	printf("Closing.\n");
 }

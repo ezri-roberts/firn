@@ -11,8 +11,8 @@
 
 typedef struct {
 
-	fdir working;
-	fdir down;
+	fdir *working;
+	fdir *down;
 
 	// user + hostname
 	char user[512];		 // Linux supports user and hostnames of up to 255 bytes.

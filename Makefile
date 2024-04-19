@@ -1,6 +1,6 @@
 CC = gcc
-OPT = -O1
-CFLAGS = -Wall -Wextra -std=c99
+OPT = -O3
+CFLAGS = -Wall -Wextra -std=c99 $(OPT)
 BIN_DIR = bin
 OBJ_DIR = obj
 BIN = out
