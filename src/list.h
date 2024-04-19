@@ -4,19 +4,34 @@
 #include <dirent.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <linux/limits.h>
 
 #define ITEM_LIST_SIZE 128
 
 typedef struct {
 
-	struct dirent **items;
+	char *path;
+	char *name;
+	int type;
+	off_t size;
+
+} fitem;
+
+typedef struct {
+
+	fitem **items;
 	size_t size;
 	size_t used;
 
-} item_list;
+} fitem_list;
 
-item_list item_list_new();
-void item_list_insert(item_list *list, struct dirent *item);
-void item_list_destroy(item_list *list);
+fitem* fitem_new(const char root[PATH_MAX], const char name[256]);
+fitem_list fitem_list_new();
+void fitem_list_insert(fitem_list *list, fitem *item);
+void fitem_list_destroy(fitem_list *list);
 
 #endif // !LIST_H

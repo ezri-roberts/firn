@@ -9,7 +9,7 @@
 typedef struct {
 
 	char *path;
-	item_list files;
+	fitem_list files;
 
 } fdir;
 

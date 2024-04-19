@@ -53,13 +53,13 @@ void firn_update(firn *inst) {
 
 	for (size_t i = 0; i < inst->working.files.used; i++) {
 
-		struct dirent *item = inst->working.files.items[i];
+		fitem *item = inst->working.files.items[i];
 
 		bool selected = (inst->selected == i);
 		const char *bk;
 		const char *fg;
 
-		if (item->d_type == 4) {
+		if (item->type == 4) {
 
 			bk = selected ? BK_BLUE : BK_BLACK;
 			fg = selected ? FG_BLACK : FG_BLUE;
@@ -69,8 +69,8 @@ void firn_update(firn *inst) {
 			fg = selected ? FG_BLACK : FG_WHITE;
 		}
 
-
-		_print(bk, fg, "%s\n", item->d_name);
+		unsigned long spacing = 40 - strlen(item->name);
+		_print(bk, fg, "%s%*luB\n", item->name, spacing, item->size);
 	}
 
 	firn_input(inst);
