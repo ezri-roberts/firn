@@ -1,12 +1,12 @@
 #include "firn.h"
 
-firn firn_new() {
+firn firn_new(const char *path) {
 
 	firn inst;
 
 	inst.running = true;
 	inst.selected = 0;
-	inst.working = fdir_new(".");
+	inst.working = fdir_new(path);
 
 	tcgetattr(STDIN_FILENO, &inst.oldt); // save the terminal attributes
 	inst.newt = inst.oldt; // copy the old settings

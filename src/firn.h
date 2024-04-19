@@ -25,7 +25,7 @@ typedef struct {
 
 } firn;
 
-firn firn_new();
+firn firn_new(const char *path);
 void firn_input(firn *inst);
 void firn_update(firn *inst);
 void firn_display_list(firn *inst, fitem_list *list, bool active, int offset);
