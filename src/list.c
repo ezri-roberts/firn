@@ -1,13 +1,14 @@
 #include "list.h"
 
-fitem* fitem_new(const char root[PATH_MAX], const char name[256]) {
+fitem* fitem_new(const char root[PATH_MAX], struct dirent *data) {
 
 	fitem *item = malloc(sizeof(fitem));
 
 	item->selected = false;
-	item->name = (char*)name;
+	item->name = data->d_name;
+	item->type = data->d_type;
 	item->path = malloc(PATH_MAX * sizeof(char));
-	sprintf(item->path, "%s/%s", root, name);
+	sprintf(item->path, "%s/%s", root, item->name);
 
 	struct stat item_info;
 	stat(item->path, &item_info);

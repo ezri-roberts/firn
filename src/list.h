@@ -31,7 +31,7 @@ typedef struct {
 
 } fitem_list;
 
-fitem* fitem_new(const char root[PATH_MAX], const char name[256]);
+fitem* fitem_new(const char root[PATH_MAX], struct dirent *data);
 fitem_list fitem_list_new();
 void fitem_list_insert(fitem_list *list, fitem *item);
 void fitem_list_destroy(fitem_list *list);
