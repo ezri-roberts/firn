@@ -35,6 +35,7 @@ typedef struct {
 	// user + hostname
 	char user[512];		 // Linux supports user and hostnames of up to 255 bytes.
 	int selected;
+	fitem *current;
 	bool running;
 
 	struct termios oldt; // Original terminal attributes.

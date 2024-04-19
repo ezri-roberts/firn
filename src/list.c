@@ -3,9 +3,9 @@
 fitem* fitem_new(const char root[PATH_MAX], const char name[256]) {
 
 	fitem *item = malloc(sizeof(fitem));
+
+	item->selected = false;
 	item->name = (char*)name;
-	// item->name = malloc(256 * sizeof(char));
-	// memcpy(item->name, name, 256 * sizeof(char));
 	item->path = malloc(PATH_MAX * sizeof(char));
 	sprintf(item->path, "%s/%s", root, name);
 

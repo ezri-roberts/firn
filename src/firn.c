@@ -25,17 +25,29 @@ void firn_input(firn *inst) {
 	int ch;
 	ch = getchar();
 
+	inst->current = inst->working.files.items[inst->selected];
+
 	switch (ch) {
+
 		case 'j': 
 			if (inst->selected < inst->working.files.used-1) {
 				inst->selected++;
 			}
 			break;
+
 		case 'k':
 			if (inst->selected > 0) {
 				inst->selected--;
 			}
 			break;
+
+		case ' ':
+			inst->current->selected = !inst->current->selected;
+			if (inst->selected < inst->working.files.used-1) {
+				inst->selected++;
+			}
+			break;
+
 		case 'q':
 			inst->running = false;
 	}
@@ -69,6 +81,14 @@ void firn_update(firn *inst) {
 			fg = selected ? FG_BLACK : FG_WHITE;
 		}
 
+		if (item->selected) {
+
+			bk = selected ? BK_GREEN : BK_BLACK;
+			fg = selected ? FG_BLACK : FG_GREEN;
+		}
+
+		char prefix = item->selected ? '*' : ' ';
+
 		if (strlen(item->name) > 55) { // Cutoff display of file names that are too long.
 
 			char name_sub[55];
@@ -76,11 +96,11 @@ void firn_update(firn *inst) {
 			name_sub[54] = '\0';
 
 			unsigned long spacing = 60 - (strlen(name_sub) + 3);
-			_print(bk, fg, "%s...%*luB\n", name_sub, spacing, item->size);
+			_print(bk, fg, "%c%s...%*luB\n", prefix, name_sub, spacing, item->size);
 		} else {
 
 			unsigned long spacing = 60 - strlen(item->name);
-			_print(bk, fg, "%s%*luB\n", item->name, spacing, item->size);
+			_print(bk, fg, "%c%s%*luB\n", prefix, item->name, spacing, item->size);
 		}
 
 	}
