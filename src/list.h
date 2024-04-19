@@ -1,6 +1,7 @@
 #ifndef LIST_H
 #define LIST_H
 
+#include "colors.h"
 #include <dirent.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,6 +21,9 @@ typedef struct {
 	int type;
 	off_t size;
 	bool selected;
+
+	const char *bk_color;
+	const char *fg_color;
 
 } fitem;
 

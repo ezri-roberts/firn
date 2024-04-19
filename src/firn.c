@@ -1,5 +1,4 @@
 #include "firn.h"
-#include <stdio.h>
 
 firn firn_new() {
 
@@ -25,12 +24,20 @@ void firn_input(firn *inst) {
 	int ch;
 	ch = getchar();
 
-	inst->current = inst->working.files.items[inst->selected];
+	if (inst->selected >= inst->working.dirs.used) {
+		inst->current = inst->working.files.items[
+			inst->selected - inst->working.dirs.used
+		];
+	} else {
+		inst->current = inst->working.dirs.items[inst->selected];
+	}
+
+	int limit = inst->working.dirs.used + inst->working.files.used;
 
 	switch (ch) {
 
 		case 'j': 
-			if (inst->selected < inst->working.files.used-1) {
+			if (inst->selected < limit-1) {
 				inst->selected++;
 			}
 			break;
@@ -43,7 +50,7 @@ void firn_input(firn *inst) {
 
 		case ' ':
 			inst->current->selected = !inst->current->selected;
-			if (inst->selected < inst->working.files.used-1) {
+			if (inst->selected < limit-1) {
 				inst->selected++;
 			}
 			break;
@@ -60,31 +67,29 @@ void firn_update(firn *inst) {
 
 	_clear();
 
-	_print(BK_BLACK, FG_GREEN, "%s ", inst->user);
-	_print(BK_BLACK, FG_WHITE, "%s\n", inst->working.path);
+	_print(BK_BLACK, FG_GREEN, false, "%s ", inst->user);
+	_print(BK_BLACK, FG_WHITE, false, "%s\n", inst->working.path);
 
-	for (size_t i = 0; i < inst->working.files.used; i++) {
+	firn_display_list(inst, &inst->working.dirs, 0);
+	firn_display_list(inst, &inst->working.files, inst->working.dirs.used);
 
-		fitem *item = inst->working.files.items[i];
+	firn_input(inst);
+	firn_update(inst);
+}
 
-		bool selected = (inst->selected == i);
-		const char *bk;
-		const char *fg;
+void firn_display_list(firn *inst, fitem_list *list, int offset) {
 
-		if (item->type == 4) {
+	for (size_t i = 0; i < list->used; i++) {
 
-			bk = selected ? BK_BLUE : BK_BLACK;
-			fg = selected ? FG_BLACK : FG_BLUE;
-		} else {
+		fitem *item = list->items[i];
 
-			bk = selected ? BK_WHITE : BK_BLACK;
-			fg = selected ? FG_BLACK : FG_WHITE;
-		}
+		bool selected = ((inst->selected - offset) == i);
+
+		const char *bk = item->bk_color;
+		const char *fg = item->fg_color;
 
 		if (item->selected) {
-
-			bk = selected ? BK_GREEN : BK_BLACK;
-			fg = selected ? FG_BLACK : FG_GREEN;
+			fg = FG_GREEN;
 		}
 
 		char prefix = item->selected ? '*' : ' ';
@@ -96,23 +101,22 @@ void firn_update(firn *inst) {
 			name_sub[54] = '\0';
 
 			unsigned long spacing = 60 - (strlen(name_sub) + 3);
-			_print(bk, fg, "%c%s...%*luB\n", prefix, name_sub, spacing, item->size);
+			_print(bk, fg, selected, "%c%s...%*luB\n", prefix, name_sub, spacing, item->size);
 		} else {
 
 			unsigned long spacing = 60 - strlen(item->name);
-			_print(bk, fg, "%c%s%*luB\n", prefix, item->name, spacing, item->size);
+			_print(bk, fg, selected, "%c%s%*luB\n", prefix, item->name, spacing, item->size);
 		}
 
 	}
-
-	firn_input(inst);
-	firn_update(inst);
 }
 
-void _print(const char *bk, const char *fg, const char *format, ...) {
+void _print(const char *bk, const char *fg, bool reversed, const char *format, ...) {
+
+	int rev = reversed ? 7 : 0;
 
 	char color[128];
-	sprintf(color, "\x1b[%s;%sm", bk, fg);
+	sprintf(color, "\x1b[%d;%s;%sm", rev, bk, fg);
 
 	char str[256];
 	sprintf(str, "%s%s%s", color, format, COLOR_RESET);

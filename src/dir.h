@@ -9,6 +9,8 @@
 typedef struct {
 
 	char *path;
+
+	fitem_list dirs;
 	fitem_list files;
 
 } fdir;
