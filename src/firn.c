@@ -24,13 +24,6 @@ void firn_input(firn *inst) {
 	int ch;
 	ch = getchar();
 
-	if (inst->selected >= inst->working.dirs.used) {
-		inst->current = inst->working.files.items[
-			inst->selected - inst->working.dirs.used
-		];
-	} else {
-		inst->current = inst->working.dirs.items[inst->selected];
-	}
 
 	int limit = inst->working.dirs.used + inst->working.files.used;
 
@@ -65,31 +58,56 @@ void firn_update(firn *inst) {
 
 	if (!inst->running) return;
 
+	if (inst->selected >= inst->working.dirs.used) {
+		inst->current = inst->working.files.items[
+			inst->selected - inst->working.dirs.used
+		];
+	} else {
+		inst->current = inst->working.dirs.items[inst->selected];
+	}
+
 	_clear();
 
 	_print(BK_BLACK, FG_GREEN, false, "%s ", inst->user);
 	_print(BK_BLACK, FG_WHITE, false, "%s\n", inst->working.path);
 
-	firn_display_list(inst, &inst->working.dirs, 0);
-	firn_display_list(inst, &inst->working.files, inst->working.dirs.used);
+	firn_display_list(inst, &inst->working.dirs, true, 0);
+	firn_display_list(inst, &inst->working.files, true, inst->working.dirs.used);
+
+	if (inst->current->type == 4) {
+
+		for(int i = 0; i < 62; i++) putchar('-');
+		printf("\n");
+		_print(BK_BLACK, FG_WHITE, false, "%s\n", inst->down.path);
+
+		firn_display_list(inst, &inst->down.dirs, false, 0);
+		firn_display_list(inst, &inst->down.files, false, inst->down.dirs.used);
+	}
 
 	firn_input(inst);
 	firn_update(inst);
 }
 
-void firn_display_list(firn *inst, fitem_list *list, int offset) {
+void firn_display_list(firn *inst, fitem_list *list, bool active, int offset) {
 
 	for (size_t i = 0; i < list->used; i++) {
 
 		fitem *item = list->items[i];
 
-		bool selected = ((inst->selected - offset) == i);
+		bool over = false;
+
+		if (active) over = ((inst->selected - offset) == i);
 
 		const char *bk = item->bk_color;
 		const char *fg = item->fg_color;
 
-		if (item->selected) {
+		if (active && item->selected) {
 			fg = FG_GREEN;
+		}
+
+		if (active && over && item->type == 4) {
+
+			inst->down = fdir_new(item->path);
 		}
 
 		char prefix = item->selected ? '*' : ' ';
@@ -101,11 +119,11 @@ void firn_display_list(firn *inst, fitem_list *list, int offset) {
 			name_sub[54] = '\0';
 
 			unsigned long spacing = 60 - (strlen(name_sub) + 3);
-			_print(bk, fg, selected, "%c%s...%*luB\n", prefix, name_sub, spacing, item->size);
+			_print(bk, fg, over, "%c%s...%*luB\n", prefix, name_sub, spacing, item->size);
 		} else {
 
 			unsigned long spacing = 60 - strlen(item->name);
-			_print(bk, fg, selected, "%c%s%*luB\n", prefix, item->name, spacing, item->size);
+			_print(bk, fg, over, "%c%s%*luB\n", prefix, item->name, spacing, item->size);
 		}
 
 	}

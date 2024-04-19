@@ -28,7 +28,7 @@ typedef struct {
 firn firn_new();
 void firn_input(firn *inst);
 void firn_update(firn *inst);
-void firn_display_list(firn *inst, fitem_list *list, int offset);
+void firn_display_list(firn *inst, fitem_list *list, bool active, int offset);
 void firn_destroy(firn *inst);
 // Print out colored text.
 void _print(const char *bk, const char *fg, bool reversed, const char *format, ...);
