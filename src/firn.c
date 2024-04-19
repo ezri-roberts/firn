@@ -98,21 +98,25 @@ void firn_display_list(firn *inst, fitem_list *list, bool active, int offset) {
 
 		bool over = false;
 
-		if (active) over = ((inst->selected - offset) == i);
-
 		const char *bk = item->bk_color;
 		const char *fg = item->fg_color;
 
-		if (active && item->selected) {
-			fg = FG_GREEN;
-		}
+		if (active) {
 
-		if (active && over && item->type == 4) {
+			over = ((inst->selected - offset) == i);
 
-			inst->down = fdir_new(item->path);
+			if (item->selected) {
+				fg = FG_GREEN;
+			}
+
+			if (over && item->type == 4) {
+				inst->down = fdir_new(item->path);
+			}
 		}
 
 		char prefix = item->selected ? '*' : ' ';
+		unsigned long spacing;
+		char *fmt;
 
 		if (strlen(item->name) > 55) { // Cutoff display of file names that are too long.
 
@@ -120,22 +124,18 @@ void firn_display_list(firn *inst, fitem_list *list, bool active, int offset) {
 			memcpy(name_sub, &item->name[0], 54);
 			name_sub[54] = '\0';
 
-			unsigned long spacing = 60 - (strlen(name_sub) + 3);
-			if (active) {
-				_print(bk, fg, over, "\n%c%s...%*luB", prefix, name_sub, spacing, item->size);
-			} else {
-				_print_off((int)(i + 2 + offset), 65, bk, fg, over, "%c%s...%*luB", prefix, name_sub, spacing, item->size);
-			}
+			spacing = 60 - (strlen(name_sub) + 3);
+			fmt = active ? "\n%c%s...%*luB" : "%c%s...%*luB";
 		} else {
 
-			unsigned long spacing = 60 - strlen(item->name);
-			if (active) {
+			spacing = 60 - strlen(item->name);
+			fmt = active ? "\n%c%s%*luB" : "%c%s%*luB";
+		}
 
-				_print(bk, fg, over, "\n%c%s%*luB", prefix, item->name, spacing, item->size);
-			} else {
-
-				_print_off((int)(i + 2 + offset), 65, bk, fg, over, "%c%s%*luB", prefix, item->name, spacing, item->size);
-			}
+		if (active) {
+			_print(bk, fg, over, fmt, prefix, item->name, spacing, item->size);
+		} else {
+			_print_off((int)(i+2 + offset), 65, bk, fg, over, fmt, prefix, item->name, spacing, item->size);
 		}
 
 	}
