@@ -43,7 +43,7 @@ void firn_input(firn *inst) {
 			break;
 
 		case 'l':
-			if (inst->current->type == 4) {
+			if (inst->current->type == 4 && inst->current->readable && inst->current->size > 0) {
 				inst->working = fdir_new(inst->down->path);
 				inst->selected = 0;
 			}
@@ -123,6 +123,10 @@ void firn_display_list(firn *inst, fitem_list *list, bool active, int offset) {
 			if (over && item->type == 4) {
 				inst->down = fdir_new(item->path);
 			}
+		}
+
+		if (!item->readable) {
+			fg = FG_RED;
 		}
 
 		char name[50];

@@ -28,6 +28,12 @@ fitem* fitem_new(const char root[PATH_MAX], struct dirent *data) {
 	struct stat item_info;
 	stat(item->path, &item_info);
 
+	if (access(item->path, R_OK) == 0) {
+		item->readable = true;
+	} else {
+		item->readable = false;
+	}
+
 	item->size = item_info.st_size;
 
 	return item;

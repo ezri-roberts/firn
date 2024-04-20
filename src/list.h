@@ -20,6 +20,7 @@ typedef struct {
 	char *name;
 	int type;
 	off_t size;
+	bool readable; // If the user has read privilages.
 	bool selected;
 
 	const char *bk_color;
