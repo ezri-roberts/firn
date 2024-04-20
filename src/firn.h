@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdarg.h>
+#include <math.h>
 #include "dir.h"
 
 typedef struct {
@@ -33,6 +34,7 @@ void firn_destroy(firn *inst);
 // Print out colored text.
 void _print(const char *bk, const char *fg, bool reversed, const char *format, ...);
 void _print_off(int yoff, int xoff, const char *bk, const char *fg, bool reversed, const char *format, ...);
+char* _get_mem(long size);
 // Show or hide the cursor.
 void _cursor_enable(bool enable);
 void _clear();

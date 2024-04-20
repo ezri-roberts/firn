@@ -1,5 +1,4 @@
 #include "firn.h"
-#include "dir.h"
 
 firn firn_new(const char *path) {
 
@@ -129,28 +128,53 @@ void firn_display_list(firn *inst, fitem_list *list, bool active, int offset) {
 		char prefix = item->selected ? '*' : ' ';
 		unsigned long spacing;
 		char *fmt;
+		char *mem = _get_mem(item->size);
 
-		if (strlen(item->name) > 55) { // Cutoff display of file names that are too long.
+		if (strlen(item->name) > 35) { // Cutoff display of file names that are too long.
 
-			char name_sub[55];
-			memcpy(name_sub, &item->name[0], 54);
-			name_sub[54] = '\0';
+			char name_sub[35];
+			memcpy(name_sub, &item->name[0], 34);
+			name_sub[34] = '\0';
 
-			spacing = 60 - (strlen(name_sub) + 3);
-			fmt = active ? "\n%c%s...%*luB" : "%c%s...%*luB";
+			spacing = 60 - (35 + 3);
+			fmt = active ? "\n%c%s...%*s" : "%c%s...%*s";
 		} else {
 
 			spacing = 60 - strlen(item->name);
-			fmt = active ? "\n%c%s%*luB" : "%c%s%*luB";
+			fmt = active ? "\n%c%s%*s" : "%c%s%*s";
 		}
 
 		if (active) {
-			_print(bk, fg, over, fmt, prefix, item->name, spacing, item->size);
+			_print(bk, fg, over, fmt, prefix, item->name, spacing, mem);
 		} else {
-			_print_off((int)(i+2 + offset), 65, bk, fg, over, fmt, prefix, item->name, spacing, item->size);
+			_print_off((int)(i+2 + offset), 65, bk, fg, over, fmt, prefix, item->name, spacing, mem);
 		}
 
+		free(mem);
+
 	}
+}
+
+char* _get_mem(long size) {
+
+	double num = (double)size;
+	char *symbol = "B";
+
+	if (size >= pow(10, 9)) {
+		symbol = "GB";
+		num = (double)size / pow(10, 9);
+	} else if (size >= pow(10, 6)) {
+		symbol = "MB";
+		num = (double)size / pow(10, 6);
+	} else if (size >= 1000) {
+		symbol = "KB";
+		num = (double)size / 1000;
+	}
+
+	char *str = malloc(256 * sizeof(char));
+	sprintf(str, "%0.1f%s", num, symbol);
+
+	return str;
 }
 
 void _print(const char *bk, const char *fg, bool reversed, const char *format, ...) {
