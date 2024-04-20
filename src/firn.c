@@ -125,32 +125,34 @@ void firn_display_list(firn *inst, fitem_list *list, bool active, int offset) {
 			}
 		}
 
+		char name[50];
 		char prefix = item->selected ? '*' : ' ';
 		unsigned long spacing;
 		char *fmt;
-		char *mem = _get_mem(item->size);
+		char *mem_str = _get_mem(item->size);
 
-		if (strlen(item->name) > 35) { // Cutoff display of file names that are too long.
+		if (strlen(item->name) > 50) { // Cutoff display of file names that are too long.
 
-			char name_sub[35];
-			memcpy(name_sub, &item->name[0], 34);
-			name_sub[34] = '\0';
+			// char name_sub[35];
+			memcpy(name, &item->name[0], 49);
+			name[49] = '\0';
 
-			spacing = 60 - (35 + 3);
+			spacing = 60 - (49 + 3);
 			fmt = active ? "\n%c%s...%*s" : "%c%s...%*s";
 		} else {
 
+			memcpy(name, item->name, 49);
 			spacing = 60 - strlen(item->name);
 			fmt = active ? "\n%c%s%*s" : "%c%s%*s";
 		}
 
 		if (active) {
-			_print(bk, fg, over, fmt, prefix, item->name, spacing, mem);
+			_print(bk, fg, over, fmt, prefix, name, spacing, mem_str);
 		} else {
-			_print_off((int)(i+2 + offset), 65, bk, fg, over, fmt, prefix, item->name, spacing, mem);
+			_print_off((int)(i+2 + offset), 63, bk, fg, over, fmt, prefix, name, spacing, mem_str);
 		}
 
-		free(mem);
+		free(mem_str);
 
 	}
 }
