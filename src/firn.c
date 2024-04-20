@@ -50,6 +50,15 @@ void firn_input(firn *inst) {
 			}
 			break;
 
+		case 'h':
+			if (strcmp(inst->working->path, "/") != 0) {
+				char parent[PATH_MAX];
+				sprintf(parent, "%s/..", inst->working->path);
+				inst->working = fdir_new(parent);
+				inst->selected = 0;
+			}
+			break;
+
 		case ' ':
 			inst->current->selected = !inst->current->selected;
 			if (inst->selected < limit-1) {
