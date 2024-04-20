@@ -6,6 +6,7 @@ firn firn_new(const char *path) {
 
 	inst.running = true;
 	inst.selected = 0;
+	inst.action = 0;
 	inst.working = fdir_new(path);
 	inst.down = NULL;
 
@@ -24,7 +25,6 @@ void firn_input(firn *inst) {
 
 	int ch;
 	ch = getchar();
-
 
 	int limit = inst->working->dirs.used + inst->working->files.used;
 
@@ -60,15 +60,39 @@ void firn_input(firn *inst) {
 
 		case ' ':
 			inst->current->selected = !inst->current->selected;
-			if (inst->selected < limit-1) {
-				inst->selected++;
-			}
+			// if (inst->selected < limit-1) {
+			// 	inst->selected++;
+			// }
+			break;
+
+		case 'd':
+			inst->action = 1;
 			break;
 
 		case 'q':
 			inst->running = false;
 	}
 
+}
+
+bool firn_confirm(firn *inst) {
+
+	int ch;
+	ch = getchar();
+
+	switch (ch) {
+
+		case 'y':
+			inst->action = 0;
+			return true;
+			break;
+	
+		case 'n':
+			inst->action = 0;
+			break;
+	}
+
+	return false;
 }
 
 void firn_update(firn *inst) {
@@ -86,7 +110,11 @@ void firn_update(firn *inst) {
 	_clear();
 
 	_print(BK_BLACK, FG_GREEN, false, "%s ", inst->user);
-	_print(BK_BLACK, FG_WHITE, false, "%s", inst->working->path);
+	_print(BK_BLACK, FG_WHITE, false, "%s\n", inst->working->path);
+
+	if (inst->action == 1) {
+		_print(BK_BLACK, FG_WHITE, false, "Delete? Y/N");
+	}
 
 	firn_display_list(inst, &inst->working->dirs, true, 0);
 	firn_display_list(inst, &inst->working->files, true, inst->working->dirs.used);
@@ -97,8 +125,35 @@ void firn_update(firn *inst) {
 		firn_display_list(inst, &inst->down->files, false, inst->down->dirs.used);
 	}
 
-	firn_input(inst);
+	if (inst->action == 0) {
+		firn_input(inst);
+	} else if (inst->action == 1) { // Delete
+		bool confirm = firn_confirm(inst);
+		if (confirm) {
+			firn_delete_item(inst);
+		}
+	}
 	firn_update(inst);
+}
+
+void firn_delete_item(firn *inst) {
+
+	char command[258 * sizeof(inst->current->path)];
+
+	for (int i = 0; i < inst->working->files.used - 1; i++) {
+
+		if (inst->working->files.items[i]->selected) {
+
+			sprintf(command, "mv %s ~/.trash/", inst->working->files.items[i]->path);
+			system(command);
+		}
+	}
+
+	sprintf(command, "mv %s ~/.trash/", inst->current->path);
+	system(command);
+
+	inst->working = fdir_new(inst->working->path);
+	inst->selected = 0;
 }
 
 void firn_display_list(firn *inst, fitem_list *list, bool active, int offset) {
@@ -153,7 +208,7 @@ void firn_display_list(firn *inst, fitem_list *list, bool active, int offset) {
 		if (active) {
 			_print(bk, fg, over, fmt, prefix, name, spacing, mem_str);
 		} else {
-			_print_off((int)(i+2 + offset), 63, bk, fg, over, fmt, prefix, name, spacing, mem_str);
+			_print_off((int)(i+3 + offset), 63, bk, fg, over, fmt, prefix, name, spacing, mem_str);
 		}
 
 		free(mem_str);

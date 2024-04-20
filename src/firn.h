@@ -18,6 +18,7 @@ typedef struct {
 	// user + hostname
 	char user[512];		 // Linux supports user and hostnames of up to 255 bytes.
 	int selected;
+	int action;				 // 0 = none, 1 = delete, 2 = copy.
 	fitem *current;
 	bool running;
 
@@ -28,8 +29,10 @@ typedef struct {
 
 firn firn_new(const char *path);
 void firn_input(firn *inst);
+bool firn_confirm(firn *inst);
 void firn_update(firn *inst);
 void firn_display_list(firn *inst, fitem_list *list, bool active, int offset);
+void firn_delete_item(firn *inst);
 void firn_destroy(firn *inst);
 // Print out colored text.
 void _print(const char *bk, const char *fg, bool reversed, const char *format, ...);
