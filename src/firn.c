@@ -1,4 +1,5 @@
 #include "firn.h"
+#include "dir.h"
 
 firn firn_new(const char *path) {
 
@@ -17,6 +18,13 @@ firn firn_new(const char *path) {
 	_cursor_enable(false);
 
 	sprintf(inst.user, "%s@%s", getenv("USER"), getenv("HOSTNAME"));
+
+	// Create trash folder if none exists.
+	if (system("mkdir -p ~/.trash") == 1) {
+		firn_destroy(&inst);
+		printf("Failed to create ~/.trash\n");
+		exit(-1);
+	}
 
 	return inst;
 }
@@ -145,12 +153,24 @@ void firn_delete_item(firn *inst) {
 		if (inst->working->files.items[i]->selected) {
 
 			sprintf(command, "mv %s ~/.trash/", inst->working->files.items[i]->path);
-			system(command);
+
+			if (system(command) == 1) {
+
+				firn_destroy(inst);
+				printf("Failed to move file to ~/.trash\n");
+				exit(-1);
+			}
 		}
 	}
 
 	sprintf(command, "mv %s ~/.trash/", inst->current->path);
-	system(command);
+
+	if (system(command) == 1) {
+
+		firn_destroy(inst);
+		printf("Failed to move file to ~/.trash\n");
+		exit(-1);
+	}
 
 	inst->working = fdir_new(inst->working->path);
 	inst->selected = 0;
@@ -285,7 +305,7 @@ void firn_destroy(firn *inst) {
 	_clear();
 	_cursor_enable(true);
 	fdir_destroy(inst->working);
-	fdir_destroy(inst->down);
+	if (inst->down != NULL) fdir_destroy(inst->down);
 	tcsetattr(STDIN_FILENO, TCSANOW, &inst->oldt); // restore the original terminal attributes.
 	printf("Closing.\n");
 }
