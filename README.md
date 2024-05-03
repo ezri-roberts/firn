@@ -10,7 +10,8 @@ A interactive ls.
 ## Usage
 
 `firn [path]`
-If no path is provided the current directory will be opened.
+If no path is provided the current directory will be opened.<br>
+Deleted files are moved to ~/.trash<br>
 
 ## Key Bindings
 
