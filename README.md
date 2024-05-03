@@ -1,6 +1,7 @@
 # Firn
 
 A interactive ls.
+> Only works on Linux.
 
 ## Build
 
