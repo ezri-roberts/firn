@@ -23,8 +23,6 @@ typedef struct {
 	fitem *current;
 	bool running;
 
-	fitem_list selected_items;
-
 	struct termios oldt; // Original terminal attributes.
 	struct termios newt; // Our modified attributes.
 

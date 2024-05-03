@@ -9,7 +9,6 @@ firn firn_new(const char *path) {
 	inst.selected = 0;
 	inst.action = 0;
 	inst.working = fdir_new(path);
-	inst.selected_items = fitem_list_new();
 	inst.down = NULL;
 
 	tcgetattr(STDIN_FILENO, &inst.oldt); // save the terminal attributes
@@ -72,14 +71,6 @@ void firn_input(firn *inst) {
 			// if (inst->selected < limit-1) {
 			// 	inst->selected++;
 			// }
-			break;
-
-		case 'y':
-			firn_yank(inst);
-			break;
-
-		case 'p':
-			firn_put(inst);
 			break;
 
 		case 'd':
@@ -185,34 +176,6 @@ void firn_delete_item(firn *inst) {
 	inst->selected = 0;
 }
 
-void firn_yank(firn *inst) {
-
-	int selected_amount = 0;
-
-	selected_amount += _get_selected(inst, &inst->working->dirs);
-	selected_amount += _get_selected(inst, &inst->working->files);
-
-	// Only one file.
-	if (selected_amount == 0) {
-		fitem_list_insert(&inst->selected_items, inst->current);
-		inst->current->selected = false;
-	}
-}
-
-void firn_put(firn *inst) {
-
-	for (int i = 0; i < inst->selected_items.used; i++) {
-
-		fitem *item = inst->selected_items.items[i];
-
-		if (item->type == 4) {
-			fitem_list_insert(&inst->working->dirs, item);
-		} else {
-			fitem_list_insert(&inst->working->files, item);
-		}
-	}
-}
-
 void firn_display_list(firn *inst, fitem_list *list, bool active, int offset) {
 
 	for (size_t i = 0; i < list->used; i++) {
@@ -271,24 +234,6 @@ void firn_display_list(firn *inst, fitem_list *list, bool active, int offset) {
 		free(mem_str);
 
 	}
-}
-
-int _get_selected(firn *inst, fitem_list *list) {
-
-	int selected_amount = 0;
-
-	for (int i = 0; i < list->used; i++) {
- 
-		fitem *item = list->items[i];
-
-		if (item->selected) {
-			selected_amount++;
-			fitem_list_insert(&inst->selected_items, item);
-			item->selected = false;
-		}
-	}
-
-	return selected_amount;
 }
 
 char* _get_mem(long size) {
