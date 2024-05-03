@@ -300,6 +300,11 @@ void _clear() {
 	printf("\e[1;1H\e[2J");
 }
 
+long clamp(long d, long min, long max) {
+  const double t = d < min ? min : d;
+  return t > max ? max : t;
+}
+
 void firn_destroy(firn *inst) {
 
 	_clear();

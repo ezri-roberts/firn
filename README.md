@@ -1,15 +1,21 @@
 # Firn
 
-A simple terminal file manager with vim keybindings.
+A interactive ls.
+
+## Build
+
+`make all`
+
+## Usage
+
+`firn [path]`
+If no path is provided the current directory will be opened.
 
 ## Key Bindings
 
 * h (up directory) 
 * j (down)
 * k (up)
-* l (open)
-* yy (yank)
-* p (put)
-* dd (delete)
+* l (down directory)
+* d (delete)
 * SPACE (select)
-* c (clear selection) 

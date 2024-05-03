@@ -45,5 +45,6 @@ char* _get_mem(long size);
 // Show or hide the cursor.
 void _cursor_enable(bool enable);
 void _clear();
+long clamp(long d, long min, long max);
 
 #endif // !FIRN_H
